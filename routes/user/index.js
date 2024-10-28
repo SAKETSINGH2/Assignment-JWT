@@ -9,6 +9,8 @@ const authenticatedUser = require("../../middlewares/authenticate");
 const { generateOtp } = require("../../utils/twoFactorAuth");
 const mailSender = require("../../utils/mailSender");
 const TwoFactorAuth = require("../../repository/user/twoFactorAuth");
+const loginApiValidator = require("./validators/loginApiValidator");
+const verifyOtpApiValidator = require("./validators/verifyOtpApiValidator");
 
 dotenv.config();
 
@@ -67,7 +69,7 @@ router.post(
     }
 );
 
-router.post("/login", async(req, res, next) => {
+router.post("/login", loginApiValidator, requestParamsValidator, async(req, res, next) => {
     const { mobileNo, password } = req.body;
 
     try {
@@ -139,7 +141,7 @@ router.post("/login", async(req, res, next) => {
     }
 });
 
-router.post("/verify_otp", async(req, res, next) => {
+router.post("/verify_otp", verifyOtpApiValidator, requestParamsValidator, async(req, res, next) => {
     const { mobileNo, otp } = req.body;
     let responseDetails;
 
