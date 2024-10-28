@@ -11,6 +11,7 @@ const mailSender = require("../../utils/mailSender");
 const TwoFactorAuth = require("../../repository/user/twoFactorAuth");
 const loginApiValidator = require("./validators/loginApiValidator");
 const verifyOtpApiValidator = require("./validators/verifyOtpApiValidator");
+const loginRateLimit = require("../../middlewares/loginRateLimit");
 
 dotenv.config();
 
@@ -69,7 +70,7 @@ router.post(
     }
 );
 
-router.post("/login", loginApiValidator, requestParamsValidator, async(req, res, next) => {
+router.post("/login", loginApiValidator, requestParamsValidator, loginRateLimit, async(req, res, next) => {
     const { mobileNo, password } = req.body;
 
     try {
@@ -100,7 +101,7 @@ router.post("/login", loginApiValidator, requestParamsValidator, async(req, res,
         // two factor auth
         if (isUserAlreadyRegistered.twoFactorAuth === TwoFactorAuth.INABLED) {
             let { otp, expiresIn } = generateOtp();
-            console.log(otp, expiresIn)
+
 
             if (!otp) {
                 return res.status(400).json({
@@ -120,7 +121,7 @@ router.post("/login", loginApiValidator, requestParamsValidator, async(req, res,
             await userRepository.storeOtp(mobileNo, otp, expiresIn);
 
             res.status(200).json({
-                restult: true,
+                result: true,
                 message: "otp sent successfully",
             });
         } else {
@@ -176,10 +177,7 @@ router.post("/verify_otp", verifyOtpApiValidator, requestParamsValidator, async(
             mobileNo: isUserAlreadyRegistered.mobileNo,
             token: token,
         });
-
-
     } catch (error) {
-        console.log("Otp verifaication failed", error)
         return next(error);
     }
 });
@@ -188,6 +186,7 @@ router.get("/profile", authenticatedUser, async(req, res, next) => {
     let responseDetails;
 
     try {
+
         responseDetails = await userRepository.getUserProfile(req.userId);
 
         if (!responseDetails) {
@@ -204,6 +203,7 @@ router.get("/profile", authenticatedUser, async(req, res, next) => {
                 name: responseDetails.name,
                 email: responseDetails.email,
                 mobileNo: responseDetails.mobileNo,
+                twoFactorAuth: responseDetails.twoFactorAuth
             },
         });
     } catch (error) {

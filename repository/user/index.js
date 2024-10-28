@@ -39,7 +39,7 @@ class userRepository {
         const result = await dbClient.findOneAndUpdate({
             mobileNo: mobileNo,
         }, { $set: { "otpDetails.otp": otp, "otpDetails.expiresIn": expiresIn } })
-        console.log("result", result)
+
         if (!result) {
             return false
         }
@@ -49,8 +49,9 @@ class userRepository {
     verifyOtp = async(mobileNo, otp) => {
         const result = await dbClient.findOne({
             mobileNo: mobileNo,
-            otp: otp
+            "otpDetails.otp": otp
         })
+
         if (!result) {
             return false
         }
