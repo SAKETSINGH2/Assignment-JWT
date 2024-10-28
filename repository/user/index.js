@@ -1,4 +1,5 @@
-const dbClient = require("./dbClient")
+const dbClient = require("./dbClient");
+const TwoFactorAuth = require("./twoFactorAuth");
 
 
 class userRepository {
@@ -32,6 +33,48 @@ class userRepository {
             return false
         }
         return result;
+    }
+
+    storeOtp = async(mobileNo, otp, expiresIn) => {
+        const result = await dbClient.findOneAndUpdate({
+            mobileNo: mobileNo,
+        }, { $set: { "otpDetails.otp": otp, "otpDetails.expiresIn": expiresIn } })
+        console.log("result", result)
+        if (!result) {
+            return false
+        }
+        return result;
+    }
+
+    verifyOtp = async(mobileNo, otp) => {
+        const result = await dbClient.findOne({
+            mobileNo: mobileNo,
+            otp: otp
+        })
+        if (!result) {
+            return false
+        }
+        return result;
+    }
+
+    enableTwoFactorAuth = async(userId) => {
+        const result = await dbClient.findByIdAndUpdate(
+            userId, { $set: { twoFactorAuth: TwoFactorAuth.INABLED } })
+
+        if (!result) {
+            return false
+        }
+        return true;
+    }
+
+    disableTwoFactorAuth = async(userId) => {
+        const result = await dbClient.findByIdAndUpdate(
+            userId, { $set: { twoFactorAuth: TwoFactorAuth.DISABLED } })
+
+        if (!result) {
+            return false
+        }
+        return true;
     }
 
 }

@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
+const TwoFactorAuth = require("./twoFactorAuth")
 
-
+const otpModelSchema = new mongoose.Schema({
+    otp: { type: String },
+    expiresIn: { type: String }
+})
 
 const userModelSchema = new mongoose.Schema({
     name: {
@@ -18,7 +22,13 @@ const userModelSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-    }
+    },
+    twoFactorAuth: {
+        type: String,
+        enum: TwoFactorAuth,
+        default: TwoFactorAuth.INABLED
+    },
+    otpDetails: { type: otpModelSchema }
 }, { timestamps: true })
 
 const userModelSechmaDbClient = mongoose.model("user", userModelSchema);
