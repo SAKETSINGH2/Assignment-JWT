@@ -5,15 +5,6 @@ function generateOtp() {
     const expiresIn = Date.now() + 5 * 60 * 1000;
     return { otp, expiresIn };
 }
-
-function sendOtp() {}
-
-function verifyOtp() {
-
-}
-
 module.exports = {
     generateOtp,
-    sendOtp,
-    verifyOtp
 }
