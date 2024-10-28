@@ -26,7 +26,7 @@ const userModelSchema = new mongoose.Schema({
     twoFactorAuth: {
         type: String,
         enum: TwoFactorAuth,
-        default: TwoFactorAuth.INABLED
+        default: TwoFactorAuth.DISABLED
     },
     otpDetails: { type: otpModelSchema }
 }, { timestamps: true })

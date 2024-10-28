@@ -13,7 +13,7 @@ const generateToken = (user) => {
             name: user.name,
             email: user.email
         }
-        const token = jwt.sign(payload, process.env.JWT_SECRET || "", { expiresIn: "1m" });
+        const token = jwt.sign(payload, process.env.JWT_SECRET || "", { expiresIn: "8h" });
 
         return token;
     } catch (error) {
